@@ -1,5 +1,9 @@
 package com.ifs.coeln.repositories;
 
-public class PedidoRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ifs.coeln.entities.Pedido;
+
+public interface PedidoRepository  extends JpaRepository<Pedido, Long>{
 
 }

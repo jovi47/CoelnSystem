@@ -1,22 +1,41 @@
 package com.ifs.coeln.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "organizador")
 public class Organizador implements Serializable {
 	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name = "laboratorio_id", nullable = false)
 	private Laboratorio laboratorio;
+
+	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "organizador")
+	private List<Item> itens = new ArrayList<>();
 
 	public Organizador() {
 
@@ -76,6 +95,5 @@ public class Organizador implements Serializable {
 			return false;
 		return true;
 	}
-	
-	
+
 }

@@ -1,5 +1,9 @@
 package com.ifs.coeln.repositories;
 
-public interface UsuarioRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ifs.coeln.entities.Usuario;
+
+public interface UsuarioRepository extends JpaRepository<Usuario, String> {
 
 }

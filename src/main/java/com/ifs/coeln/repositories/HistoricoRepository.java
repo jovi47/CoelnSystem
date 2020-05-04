@@ -1,5 +1,9 @@
 package com.ifs.coeln.repositories;
 
-public interface HistoricoRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ifs.coeln.entities.Historico;
+
+public interface HistoricoRepository extends JpaRepository<Historico, Long>{
 
 }

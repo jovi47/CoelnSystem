@@ -1,5 +1,13 @@
 package com.ifs.coeln.services;
 
-public class HistoricoService {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.ifs.coeln.repositories.HistoricoRepository;
+
+@Service
+public class HistoricoService {
+	
+	@Autowired
+	HistoricoRepository repository;
 }

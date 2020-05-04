@@ -4,11 +4,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "componente")
@@ -18,16 +24,31 @@ public class Componente implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String name;
+
+	@Column(nullable = false, unique = true)
+	private String nome;
+
+	@Column(columnDefinition = "--")
 	private String descricao;
+
+	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
+
+	@ManyToOne
+	@JoinColumn(name = "tipo_id", nullable = false)
 	private Tipo tipo;
+
+	@OneToMany(mappedBy = "componente")
 	private List<Observacao> observacoes = new ArrayList<>();
 
-	public Componente(Long id, String name, String descricao, Boolean is_deleted, Tipo tipo) {
+	@JsonIgnore
+	@OneToMany(mappedBy = "componente")
+	private List<Item> itens = new ArrayList<>();
+
+	public Componente(Long id, String nome, String descricao, Boolean is_deleted, Tipo tipo) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.nome = nome;
 		this.descricao = descricao;
 		this.is_deleted = is_deleted;
 		this.tipo = tipo;
@@ -45,12 +66,12 @@ public class Componente implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getNome() {
+		return nome;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
 	public String getDescricao() {

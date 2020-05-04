@@ -1,5 +1,9 @@
 package com.ifs.coeln.repositories;
 
-public interface OrganizadorRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ifs.coeln.entities.Organizador;
+
+public interface OrganizadorRepository extends JpaRepository<Organizador, Long>{
 
 }

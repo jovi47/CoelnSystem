@@ -1,5 +1,9 @@
 package com.ifs.coeln.repositories;
 
-public interface ItemRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ifs.coeln.entities.Item;
+
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
 }

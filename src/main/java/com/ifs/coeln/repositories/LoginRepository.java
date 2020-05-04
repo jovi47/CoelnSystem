@@ -1,5 +1,9 @@
 package com.ifs.coeln.repositories;
 
-public class LoginRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ifs.coeln.entities.Login;
+
+public interface LoginRepository extends JpaRepository<Login, Long>{
 
 }

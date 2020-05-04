@@ -1,8 +1,13 @@
 package com.ifs.coeln.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -10,8 +15,14 @@ import javax.persistence.Table;
 public class Laboratorio implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Id
 	private Long id;
+	
+	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
+	
+	@OneToMany(mappedBy = "laboratorio")
+	private List<Organizador> organizadores = new ArrayList<>();
 
 	public Laboratorio() {
 
@@ -20,6 +31,10 @@ public class Laboratorio implements Serializable {
 	public Laboratorio(Long id, Boolean is_deleted) {
 		this.id = id;
 		this.is_deleted = is_deleted;
+	}
+
+	public List<Organizador> getOrganizadores() {
+		return organizadores;
 	}
 
 	public Long getId() {
