@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ifs.coeln.dto.ComponenteDTO;
 import com.ifs.coeln.entities.Componente;
 import com.ifs.coeln.entities.Tipo;
@@ -46,22 +47,22 @@ public class ComponenteResource {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Componente> findById(@PathVariable Long id) {
-		Componente user = service.findById(id);
-		return ResponseEntity.ok().body(user);
+	public ResponseEntity<ComponenteDTO> findById(@PathVariable Long id) {
+		ComponenteDTO componente = new ComponenteDTO(service.findById(id));
+		return ResponseEntity.ok().body(componente);
 	}
 
 	@Autowired
 	private TipoService tipoService;
 
 	@PostMapping
-	public ResponseEntity<Componente> insert(@RequestBody Componente obj) {
+	public ResponseEntity<ComponenteDTO> insert(@RequestBody Componente obj) {
 		Componente componente = new Componente(obj);
 		componente = service.insert(componente);
 		componente.setTipo(tipoService.findById(componente.getTipo().getId()));
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(componente.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(componente);
+		ComponenteDTO dto = new ComponenteDTO(componente);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+		return ResponseEntity.created(uri).body(dto);
 	}
 
 	@DeleteMapping(value = "/{id}")
@@ -71,8 +72,8 @@ public class ComponenteResource {
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<Componente> update(@PathVariable Long id, @RequestBody Componente obj) {
-		obj = service.update(id, obj);
-		return ResponseEntity.ok().body(obj);
+	public ResponseEntity<ComponenteDTO> update(@PathVariable Long id, @RequestBody Componente obj) {
+		ComponenteDTO dto = new ComponenteDTO(obj = service.update(id, obj));
+		return ResponseEntity.ok().body(dto);
 	}
 }

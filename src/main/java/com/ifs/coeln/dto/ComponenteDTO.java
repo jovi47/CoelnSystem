@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ifs.coeln.entities.Componente;
 import com.ifs.coeln.entities.Item;
 import com.ifs.coeln.entities.Observacao;
@@ -14,10 +15,10 @@ public class ComponenteDTO implements Serializable {
 
 	private Long id;
 	private String nome;
-	private Tipo tipo;
+	private TipoDTO tipo;
 	private String descricao;
-	private List<Observacao> observacoes;
-	private List<Item> itens;
+	private List<Observacao> observacoes = new ArrayList<>();
+	private List<Item> itens = new ArrayList<>();
 
 	public ComponenteDTO() {
 
@@ -26,12 +27,26 @@ public class ComponenteDTO implements Serializable {
 	public ComponenteDTO(Componente componente) {
 		this.id = componente.getId();
 		this.nome = componente.getNome();
-		this.tipo = componente.getTipo();
+		setTipo(componente.getTipo());
 		this.descricao = componente.getDescricao();
-		this.observacoes = new ArrayList<>();
 		observacoes.addAll(componente.getObservacoes());
-		this.itens = new ArrayList<>();
 		itens.addAll(componente.getItens());
+	}
+
+	private void setTipo(Tipo tipo) {
+		this.tipo = new TipoDTO(tipo) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			@JsonIgnore
+			public List<Componente> getComponentes() {
+				return null;
+			};
+		};
+	}
+
+	public TipoDTO getTipo() {
+		return tipo;
 	}
 
 	public Long getId() {
@@ -60,10 +75,6 @@ public class ComponenteDTO implements Serializable {
 
 	public List<Item> getItens() {
 		return itens;
-	}
-
-	public Tipo getTipo() {
-		return tipo;
 	}
 
 	public List<Observacao> getObservacoes() {

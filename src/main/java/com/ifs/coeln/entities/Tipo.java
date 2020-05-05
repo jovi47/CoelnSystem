@@ -49,11 +49,11 @@ public class Tipo implements Serializable {
 		this.nome = obj.getNome();
 		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
 	}
-
+	
 	public List<Componente> getComponentes() {
 		return componentes;
 	}
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -85,7 +85,7 @@ public class Tipo implements Serializable {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
