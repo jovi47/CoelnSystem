@@ -28,7 +28,7 @@ public class Componente implements Serializable {
 	@Column(nullable = false, unique = true)
 	private String nome;
 
-	@Column(columnDefinition = "--")
+	@Column(columnDefinition = "varchar(255) default '--'")
 	private String descricao;
 
 	@Column(columnDefinition = "boolean default false")
@@ -45,13 +45,29 @@ public class Componente implements Serializable {
 	@OneToMany(mappedBy = "componente")
 	private List<Item> itens = new ArrayList<>();
 
+	public Componente() {
+
+	}
+
+	public Componente(Componente componente) {
+		this.id = componente.getId();
+		this.nome = componente.getNome();
+		this.descricao = componente.getDescricao();
+		this.is_deleted = (componente.getIs_deleted() == null) ? false : false;
+		this.tipo = componente.getTipo();
+	}
+
 	public Componente(Long id, String nome, String descricao, Boolean is_deleted, Tipo tipo) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.descricao = descricao;
-		this.is_deleted = is_deleted;
+		this.is_deleted = (is_deleted == null) ? false : false;
 		this.tipo = tipo;
+	}
+
+	public List<Item> getItens() {
+		return itens;
 	}
 
 	public List<Observacao> getObservacoes() {

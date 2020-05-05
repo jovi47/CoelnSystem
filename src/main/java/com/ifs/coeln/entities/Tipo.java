@@ -28,7 +28,7 @@ public class Tipo implements Serializable {
 
 	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "tipo")
 	private List<Componente> componentes = new ArrayList<>();
@@ -42,6 +42,12 @@ public class Tipo implements Serializable {
 		this.id = id;
 		this.nome = nome;
 		this.is_deleted = is_deleted;
+	}
+
+	public Tipo(Tipo obj) {
+		this.id = obj.getId();
+		this.nome = obj.getNome();
+		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
 	}
 
 	public List<Componente> getComponentes() {
