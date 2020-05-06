@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ifs.coeln.entities.Componente;
 
-public interface ComponenteRepository extends JpaRepository<Componente, Long>{
+public interface ComponenteRepository extends JpaRepository<Componente, Long> {
 
 }

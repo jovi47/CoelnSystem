@@ -139,4 +139,12 @@ public class Componente implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Componente [id=" + id + ", nome=" + nome + ", descricao=" + descricao + ", is_deleted=" + is_deleted
+				+ ", tipo=" + tipo + ", observacoes=" + observacoes + ", itens=" + itens + "]";
+	}
+	
+	
+	
 }
