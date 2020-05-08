@@ -13,14 +13,14 @@ import javax.persistence.Table;
 @Table(name = "curso")
 public class Curso implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Column(nullable = false,unique = true)
+
+	@Column(nullable = false, unique = true)
 	private String nome;
-	
+
 	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
 
@@ -28,11 +28,10 @@ public class Curso implements Serializable {
 
 	}
 
-	public Curso(Long id, String nome, Boolean is_deleted) {
-
-		this.id = id;
-		this.nome = nome;
-		this.is_deleted = is_deleted;
+	public Curso(Curso obj) {
+		this.id = obj.getId();
+		this.nome = obj.getNome();
+		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
 	}
 
 	public Long getId() {

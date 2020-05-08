@@ -1,4 +1,4 @@
-package com.joaozin.course.resources.exceptions;
+package com.ifs.coeln.resources.exceptions;
 
 import java.io.Serializable;
 import java.time.Instant;

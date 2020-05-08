@@ -1,7 +1,6 @@
 package com.ifs.coeln.resources;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,55 +18,53 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.ifs.coeln.dto.TipoDTO;
 import com.ifs.coeln.entities.Tipo;
 import com.ifs.coeln.services.TipoService;
+import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @RestController
 @RequestMapping(value = "/tipos")
 public class TipoResource {
-	
+
 	@Autowired
 	private TipoService service;
-	
 
 	@GetMapping
 	public ResponseEntity<List<TipoDTO>> findAll() {
-		List<TipoDTO> dto = filterList(service.findAll());
-		return ResponseEntity.ok().body(dto);
-	}
-
-	private List<TipoDTO> filterList(List<Tipo> list) {
-		List<TipoDTO> dto = new ArrayList<>();
-		for (Tipo tipo : list) {
-			if (tipo.getIs_deleted() != null && tipo.getIs_deleted() == false) {
-				dto.add(new TipoDTO(tipo));
-			}
-		}
-		return dto;
+		return ResponseEntity.ok().body(service.findAll());
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Tipo> findById(@PathVariable Long id) {
-		Tipo user = service.findById(id);
-		return ResponseEntity.ok().body(user);
+	public ResponseEntity<TipoDTO> findById(@PathVariable Long id) {
+		Tipo tipo = service.findById(id);
+		if (tipo.getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Tipo", id);
+		}
+		return ResponseEntity.ok().body(new TipoDTO(tipo));
 	}
 
 	@PostMapping
-	public ResponseEntity<Tipo> insert(@RequestBody Tipo obj) {
-		Tipo tipo = new Tipo(obj);
-		tipo = service.insert(tipo);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(tipo.getId())
-				.toUri();
-		return ResponseEntity.created(uri).body(tipo);
+	public ResponseEntity<TipoDTO> insert(@RequestBody Tipo obj) {
+		TipoDTO dto = service.insert(obj);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+		return ResponseEntity.created(uri).body(dto);
 	}
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		service.delete(id);
+		if (service.findById(id).getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Tipo", id);
+		}
+		service.haveRelation(id);
+		Tipo tipo = new Tipo();
+		tipo.setIs_deleted(true);
+		service.update(id, tipo);
 		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<Tipo> update(@PathVariable Long id, @RequestBody Tipo obj) {
-		obj = service.update(id, obj);
-		return ResponseEntity.ok().body(obj);
+	public ResponseEntity<TipoDTO> update(@PathVariable Long id, @RequestBody Tipo obj) {
+		if (service.findById(id).getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Tipo", id);
+		}
+		return ResponseEntity.ok().body(service.update(id, obj));
 	}
 }

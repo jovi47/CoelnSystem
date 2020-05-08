@@ -57,15 +57,6 @@ public class Componente implements Serializable {
 		this.tipo = componente.getTipo();
 	}
 
-	public Componente(Long id, String nome, String descricao, Boolean is_deleted, Tipo tipo) {
-		super();
-		this.id = id;
-		this.nome = nome;
-		this.descricao = descricao;
-		this.is_deleted = (is_deleted == null) ? false : false;
-		this.tipo = tipo;
-	}
-
 	public List<Item> getItens() {
 		return itens;
 	}
@@ -139,12 +130,4 @@ public class Componente implements Serializable {
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		return "Componente [id=" + id + ", nome=" + nome + ", descricao=" + descricao + ", is_deleted=" + is_deleted
-				+ ", tipo=" + tipo + ", observacoes=" + observacoes + ", itens=" + itens + "]";
-	}
-	
-	
-	
 }

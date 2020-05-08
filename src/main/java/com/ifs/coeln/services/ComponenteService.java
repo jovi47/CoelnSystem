@@ -1,5 +1,6 @@
 package com.ifs.coeln.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,10 +11,11 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.ifs.coeln.dto.ComponenteDTO;
 import com.ifs.coeln.entities.Componente;
 import com.ifs.coeln.repositories.ComponenteRepository;
-import com.joaozin.course.services.exceptions.DatabaseException;
-import com.joaozin.course.services.exceptions.ResourceNotFoundException;
+import com.ifs.coeln.services.exceptions.DatabaseException;
+import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ComponenteService {
@@ -24,38 +26,52 @@ public class ComponenteService {
 	@Autowired
 	ComponenteRepository repository;
 
-	public List<Componente> findAll() {
-		return repository.findAll();
+	public List<ComponenteDTO> findAll() {
+		return filterList(repository.findAll());
+	}
+
+	private List<ComponenteDTO> filterList(List<Componente> list) {
+		List<ComponenteDTO> dto = new ArrayList<>();
+		for (Componente componente : list) {
+			if (componente.getIs_deleted() == false) {
+				dto.add(new ComponenteDTO(componente));
+			}
+		}
+		return dto;
 	}
 
 	public Componente findById(Long id) {
 		Optional<Componente> obj = repository.findById(id);
-			return obj.orElseThrow(() -> new ResourceNotFoundException(id));
+		return obj.orElseThrow(() -> new ResourceNotFoundException("Componente", id));
 	}
 
-	public Componente insert(Componente obj) {
-		return repository.save(obj);
+	public ComponenteDTO insert(Componente obj) {
+		Componente componente = new Componente(obj);
+		componente = repository.save(componente);
+		componente.setTipo(tipoService.findById(componente.getTipo().getId()));
+		return new ComponenteDTO(componente);
 	}
 
 	public void delete(Long id) {
 		try {
 			repository.deleteById(id);
 		} catch (EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException(id);
+			throw new ResourceNotFoundException("Componente", id);
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e.getMessage());
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
 		}
-	}
-
-	public Componente update(Long id, Componente obj) {
+		
+	}	
+	
+	public ComponenteDTO update(Long id, Componente obj) {
 		try {
 			Componente entity = repository.getOne(id);
 			updateData(entity, obj);
-			return repository.save(entity);
+			return new ComponenteDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
-			throw new ResourceNotFoundException(id);
+			throw new ResourceNotFoundException("Componente", id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException(e, "componente");
 		}
 	}
 
@@ -64,7 +80,6 @@ public class ComponenteService {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
 		entity.setNome((obj.getNome() == null) ? entity.getNome() : obj.getNome());
 		if (obj.getTipo() == null) {
-
 		} else {
 			entity.setTipo(tipoService.findById(obj.getTipo().getId()));
 		}

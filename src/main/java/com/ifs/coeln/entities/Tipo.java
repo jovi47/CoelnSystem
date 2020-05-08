@@ -31,17 +31,10 @@ public class Tipo implements Serializable {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "tipo")
-	private List<Componente> componentes = new ArrayList<>();
+	protected List<Componente> componentes = new ArrayList<>();
 
 	public Tipo() {
 
-	}
-
-	public Tipo(Long id, String nome, Boolean is_deleted) {
-		super();
-		this.id = id;
-		this.nome = nome;
-		this.is_deleted = is_deleted;
 	}
 
 	public Tipo(Tipo obj) {
@@ -49,11 +42,11 @@ public class Tipo implements Serializable {
 		this.nome = obj.getNome();
 		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
 	}
-	
+
 	public List<Componente> getComponentes() {
 		return componentes;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -85,7 +78,7 @@ public class Tipo implements Serializable {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
