@@ -38,13 +38,12 @@ public class Item implements Serializable {
 
 	}
 
-	public Item(Long id, Componente componente, Organizador organizador, Integer quantidade, Boolean is_deleted) {
-		super();
-		this.id = id;
-		this.componente = componente;
-		this.organizador = organizador;
-		this.quantidade = quantidade;
-		this.is_deleted = is_deleted;
+	public Item(Item item) {
+		this.id = item.getId();
+		this.componente = item.getComponente();
+		this.organizador = item.getOrganizador();
+		this.quantidade = item.getQuantidade();
+		this.is_deleted = (componente.getIs_deleted() == null) ? false : false;
 	}
 
 	public Long getId() {
