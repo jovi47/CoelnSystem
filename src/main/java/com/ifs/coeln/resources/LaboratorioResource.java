@@ -53,6 +53,7 @@ public class LaboratorioResource {
 		if (service.findById(id).getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Laboratorio", id);
 		}
+		service.haveRelation(id);
 		Laboratorio lab = new Laboratorio();
 		lab.setIs_deleted(true);
 		service.update(id, lab);

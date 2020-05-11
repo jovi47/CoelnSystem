@@ -21,7 +21,7 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 public class TipoService {
 
 	@Autowired
-	TipoRepository repository;
+	private TipoRepository repository;
 
 	public List<TipoDTO> findAll() {
 		return filterList(repository.findAll());

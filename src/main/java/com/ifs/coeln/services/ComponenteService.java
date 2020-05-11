@@ -25,7 +25,7 @@ public class ComponenteService {
 	private TipoService tipoService;
 
 	@Autowired
-	ComponenteRepository repository;
+	private ComponenteRepository repository;
 
 	public List<ComponenteDTO> findAll() {
 		return filterList(repository.findAll());

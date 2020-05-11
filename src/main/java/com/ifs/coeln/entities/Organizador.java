@@ -25,14 +25,13 @@ public class Organizador implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "laboratorio_id", nullable = false)
 	private Laboratorio laboratorio;
 
 	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "organizador")
 	private List<Item> itens = new ArrayList<>();
@@ -41,10 +40,10 @@ public class Organizador implements Serializable {
 
 	}
 
-	public Organizador(Long id, Laboratorio laboratorio, Boolean is_deleted) {
-		this.id = id;
-		this.laboratorio = laboratorio;
-		this.is_deleted = is_deleted;
+	public Organizador(Organizador obj) {
+		this.id = obj.getId();
+		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
+		this.laboratorio = obj.getLaboratorio();
 	}
 
 	public Long getId() {
@@ -96,4 +95,9 @@ public class Organizador implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Organizador [id=" + id + ", laboratorio=" + laboratorio + ", is_deleted=" + is_deleted + "]";
+	}
+	
 }

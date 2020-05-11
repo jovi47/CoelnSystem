@@ -13,8 +13,9 @@ public class LaboratorioDTO implements Serializable {
 
 	}
 
-	public LaboratorioDTO(Laboratorio lab ) {
-		this.id=lab.getId();
+	public LaboratorioDTO(Laboratorio lab) {
+		this.id = lab.getId();
+
 	}
 
 	public Long getId() {
@@ -24,6 +25,5 @@ public class LaboratorioDTO implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
-	
+
 }

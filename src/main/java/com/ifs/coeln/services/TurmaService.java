@@ -21,7 +21,7 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 public class TurmaService {
 
 	@Autowired
-	TurmaRepository repository;
+	private TurmaRepository repository;
 
 	public List<TurmaDTO> findAll() {
 		return filterList(repository.findAll());

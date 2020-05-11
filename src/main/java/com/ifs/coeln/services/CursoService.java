@@ -21,7 +21,7 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 public class CursoService {
 
 	@Autowired
-	CursoRepository repository;
+	private CursoRepository repository;
 
 	public List<CursoDTO> findAll() {
 		return filterList(repository.findAll());

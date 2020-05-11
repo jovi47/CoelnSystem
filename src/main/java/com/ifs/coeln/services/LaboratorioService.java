@@ -21,7 +21,7 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 public class LaboratorioService {
 
 	@Autowired
-	LaboratorioRepository repository;
+	private LaboratorioRepository repository;
 
 	public List<LaboratorioDTO> findAll() {
 		return filterList(repository.findAll());
@@ -77,5 +77,16 @@ public class LaboratorioService {
 	private void updateData(Laboratorio entity, Laboratorio obj) {
 		entity.setId((obj.getId() == null) ? entity.getId() : obj.getId());
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
+	}
+
+	public void haveRelation(Long id) {
+		try {
+			Laboratorio entity = repository.getOne(id);
+			if (entity.getOrganizadores().size() != 0) {
+				throw new DatabaseException("Esse tipo possue relacao com outras tabelas, exclusao negada");
+			}
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Laboratorio", id);
+		}
 	}
 }

@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "laboratorio")
 public class Laboratorio implements Serializable {
@@ -17,10 +19,10 @@ public class Laboratorio implements Serializable {
 
 	@Id
 	private Long id;
-	
+
 	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
-	
+	@JsonIgnore
 	@OneToMany(mappedBy = "laboratorio")
 	private List<Organizador> organizadores = new ArrayList<>();
 
@@ -29,7 +31,7 @@ public class Laboratorio implements Serializable {
 	}
 
 	public Laboratorio(Laboratorio obj) {
-		this.id=obj.getId();
+		this.id = obj.getId();
 		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
 	}
 
