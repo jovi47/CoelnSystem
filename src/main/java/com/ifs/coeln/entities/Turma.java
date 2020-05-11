@@ -19,7 +19,7 @@ public class Turma implements Serializable {
 	private Long id;
 
 	@Column(unique = true, nullable = false)
-	private String name;
+	private String nome;
 
 	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
@@ -28,11 +28,10 @@ public class Turma implements Serializable {
 
 	}
 
-	public Turma(Long id, String name, Boolean is_deleted) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.is_deleted = is_deleted;
+	public Turma(Turma obj) {
+		this.id = obj.getId();
+		this.nome = obj.getNome();
+		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
 	}
 
 	public Long getId() {
@@ -43,12 +42,12 @@ public class Turma implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getNome() {
+		return nome;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
 	public Boolean getIs_deleted() {

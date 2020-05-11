@@ -19,7 +19,7 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class CursoService {
-	
+
 	@Autowired
 	CursoRepository repository;
 
@@ -43,9 +43,13 @@ public class CursoService {
 	}
 
 	public CursoDTO insert(Curso obj) {
-		Curso tipo = new Curso(obj);
-		repository.save(tipo);
-		return new CursoDTO(tipo);
+		try {
+			Curso tipo = new Curso(obj);
+			repository.save(tipo);
+			return new CursoDTO(tipo);
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException(e, "curso");
+		}
 	}
 
 	public void delete(Long id) {
@@ -67,7 +71,7 @@ public class CursoService {
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Curso", id);
 		} catch (DataIntegrityViolationException e) {
-			throw new DatabaseException(e, "tipo");
+			throw new DatabaseException(e, "curso");
 		}
 	}
 

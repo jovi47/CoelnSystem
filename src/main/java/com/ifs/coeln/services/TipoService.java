@@ -43,9 +43,13 @@ public class TipoService {
 	}
 
 	public TipoDTO insert(Tipo obj) {
+		try {
 		Tipo tipo = new Tipo(obj);
 		repository.save(tipo);
 		return new TipoDTO(tipo);
+		}catch (DataIntegrityViolationException e) {
+			throw new DatabaseException(e, "tipo");
+		}
 	}
 
 	public void delete(Long id) {

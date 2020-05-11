@@ -28,9 +28,9 @@ public class Laboratorio implements Serializable {
 
 	}
 
-	public Laboratorio(Long id, Boolean is_deleted) {
-		this.id = id;
-		this.is_deleted = is_deleted;
+	public Laboratorio(Laboratorio obj) {
+		this.id=obj.getId();
+		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
 	}
 
 	public List<Organizador> getOrganizadores() {

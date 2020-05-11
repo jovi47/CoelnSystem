@@ -52,7 +52,7 @@ public class Componente implements Serializable {
 	public Componente(Componente componente) {
 		this.id = componente.getId();
 		this.nome = componente.getNome();
-		this.descricao = componente.getDescricao();
+		this.descricao = (componente.getDescricao() == null) ? "--" : componente.getDescricao();
 		this.is_deleted = (componente.getIs_deleted() == null) ? false : false;
 		this.tipo = componente.getTipo();
 	}

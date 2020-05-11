@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.ComponenteDTO;
 import com.ifs.coeln.entities.Componente;
+import com.ifs.coeln.entities.Tipo;
 import com.ifs.coeln.repositories.ComponenteRepository;
 import com.ifs.coeln.services.exceptions.DatabaseException;
 import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
@@ -46,10 +47,18 @@ public class ComponenteService {
 	}
 
 	public ComponenteDTO insert(Componente obj) {
-		Componente componente = new Componente(obj);
-		componente = repository.save(componente);
-		componente.setTipo(tipoService.findById(componente.getTipo().getId()));
-		return new ComponenteDTO(componente);
+		try {
+			Componente componente = new Componente(obj);
+			Tipo tipo = tipoService.findById(componente.getTipo().getId());
+			if (tipo.getIs_deleted()) {
+				throw new ResourceNotFoundException("Tipo", tipo.getId());
+			}
+			componente = repository.save(componente);
+			componente.setTipo(tipo);
+			return new ComponenteDTO(componente);
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException(e, "componente");
+		}
 	}
 
 	public void delete(Long id) {
@@ -60,9 +69,9 @@ public class ComponenteService {
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e.getMessage());
 		}
-		
-	}	
-	
+
+	}
+
 	public ComponenteDTO update(Long id, Componente obj) {
 		try {
 			Componente entity = repository.getOne(id);
