@@ -11,8 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "observacao")
 public class Observacao implements Serializable {
@@ -22,7 +20,6 @@ public class Observacao implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "componente_id", nullable = false)
 	private Componente componente;
@@ -37,12 +34,11 @@ public class Observacao implements Serializable {
 
 	}
 
-	public Observacao(Long id, Componente componente, String texto, Boolean is_deleted) {
-		super();
-		this.id = id;
-		this.componente = componente;
-		this.texto = texto;
-		this.is_deleted = is_deleted;
+	public Observacao(Observacao observacao) {
+		this.id=observacao.getId();
+		this.componente=observacao.getComponente();
+		this.texto=observacao.getTexto();
+		this.is_deleted = (observacao.getIs_deleted() == null) ? false : false;
 	}
 
 	public Long getId() {

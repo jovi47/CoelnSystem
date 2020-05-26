@@ -34,11 +34,11 @@ public class CursoResource {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<CursoDTO> findById(@PathVariable Long id) {
-		Curso tipo = service.findById(id);
-		if (tipo.getIs_deleted() == true) {
+		Curso obj = service.findById(id);
+		if (obj.getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Curso", id);
 		}
-		return ResponseEntity.ok().body(new CursoDTO(tipo));
+		return ResponseEntity.ok().body(new CursoDTO(obj));
 	}
 
 	@PostMapping
@@ -53,9 +53,9 @@ public class CursoResource {
 		if (service.findById(id).getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Curso", id);
 		}
-		Curso tipo = new Curso();
-		tipo.setIs_deleted(true);
-		service.update(id, tipo);
+		Curso obj = new Curso();
+		obj.setIs_deleted(true);
+		service.update(id, obj);
 		return ResponseEntity.noContent().build();
 	}
 

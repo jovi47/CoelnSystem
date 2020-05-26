@@ -15,17 +15,13 @@ public class OrganizadorDTO implements Serializable {
 
 	}
 
-	public OrganizadorDTO(Organizador organizador) {
-		this.id = organizador.getId();
-		this.laboratorio = new LaboratorioDTO(organizador.getLaboratorio());
+	public OrganizadorDTO(Organizador obj) {
+		this.id = obj.getId();
+		this.laboratorio = new LaboratorioDTO(obj.getLaboratorio());
 	}
 
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public LaboratorioDTO getLaboratorio() {

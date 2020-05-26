@@ -23,7 +23,7 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 @RestController
 @RequestMapping(value = "/organizadores")
 public class OrganizadorResource {
-	
+
 	@Autowired
 	private OrganizadorService service;
 
@@ -34,11 +34,11 @@ public class OrganizadorResource {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<OrganizadorDTO> findById(@PathVariable Long id) {
-		Organizador org = service.findById(id);
-		if (org.getIs_deleted()) {
+		Organizador obj = service.findById(id);
+		if (obj.getIs_deleted()) {
 			throw new ResourceNotFoundException("Organizador", id);
 		}
-		return ResponseEntity.ok().body(new OrganizadorDTO(org));
+		return ResponseEntity.ok().body(new OrganizadorDTO(obj));
 	}
 
 	@PostMapping
@@ -54,9 +54,9 @@ public class OrganizadorResource {
 		if (service.findById(id).getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Organizador", id);
 		}
-		Organizador org = new Organizador();
-		org.setIs_deleted(true);
-		service.update(id, org);
+		Organizador obj = new Organizador();
+		obj.setIs_deleted(true);
+		service.update(id, obj);
 		return ResponseEntity.noContent().build();
 	}
 
@@ -67,5 +67,5 @@ public class OrganizadorResource {
 		}
 		return ResponseEntity.ok().body(service.update(id, obj));
 	}
-	
+
 }

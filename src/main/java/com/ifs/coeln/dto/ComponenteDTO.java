@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ifs.coeln.entities.Componente;
-import com.ifs.coeln.entities.Observacao;
 
 public class ComponenteDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -14,18 +13,18 @@ public class ComponenteDTO implements Serializable {
 	private String nome;
 	private TipoDTO tipo;
 	private String descricao;
-	private List<Observacao> observacoes = new ArrayList<>();
+	private List<ObservacaoDTO> observacoes = new ArrayList<>();
 
 	public ComponenteDTO() {
 
 	}
 
-	public ComponenteDTO(Componente componente) {
-		this.id = componente.getId();
-		this.nome = componente.getNome();
-		this.tipo = new TipoDTO(componente.getTipo());
-		this.descricao = componente.getDescricao();
-		observacoes.addAll(componente.getObservacoes());
+	public ComponenteDTO(Componente obj) {
+		this.id = obj.getId();
+		this.nome = obj.getNome();
+		this.tipo = new TipoDTO(obj.getTipo());
+		this.descricao = obj.getDescricao();
+		obj.getObservacoes().forEach(obs -> observacoes.add(new ObservacaoDTO(obs)));
 	}
 
 	public TipoDTO getTipo() {
@@ -36,27 +35,15 @@ public class ComponenteDTO implements Serializable {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getNome() {
 		return nome;
-	}
-
-	public void setNome(String nome) {
-		this.nome = nome;
 	}
 
 	public String getDescricao() {
 		return descricao;
 	}
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
-
-	public List<Observacao> getObservacoes() {
+	public List<ObservacaoDTO> getObservacoes() {
 		return observacoes;
 	}
 

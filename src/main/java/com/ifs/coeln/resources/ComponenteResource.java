@@ -34,11 +34,11 @@ public class ComponenteResource {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ComponenteDTO> findById(@PathVariable Long id) {
-		Componente comp = service.findById(id);
-		if (comp.getIs_deleted() == true) {
+		Componente obj = service.findById(id);
+		if (obj.getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Componente", id);
 		}
-		return ResponseEntity.ok().body(new ComponenteDTO(comp));
+		return ResponseEntity.ok().body(new ComponenteDTO(obj));
 	}
 
 	@PostMapping
@@ -53,9 +53,9 @@ public class ComponenteResource {
 		if (service.findById(id).getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Componente", id);
 		}
-		Componente comp = new Componente();
-		comp.setIs_deleted(true);
-		service.update(id, comp);
+		Componente obj = new Componente();
+		obj.setIs_deleted(true);
+		service.update(id, obj);
 		return ResponseEntity.noContent().build();
 	}
 

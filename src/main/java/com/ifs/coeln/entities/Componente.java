@@ -37,7 +37,8 @@ public class Componente implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "tipo_id", nullable = false)
 	private Tipo tipo;
-
+	
+	@JsonIgnore
 	@OneToMany(mappedBy = "componente")
 	private List<Observacao> observacoes = new ArrayList<>();
 

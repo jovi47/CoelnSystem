@@ -36,9 +36,9 @@ public class ItemService {
 
 	private List<ItemDTO> filterList(List<Item> list) {
 		List<ItemDTO> dto = new ArrayList<>();
-		for (Item componente : list) {
-			if (componente.getIs_deleted() == false) {
-				dto.add(new ItemDTO(componente));
+		for (Item item : list) {
+			if (item.getIs_deleted() == false) {
+				dto.add(new ItemDTO(item));
 			}
 		}
 		return dto;

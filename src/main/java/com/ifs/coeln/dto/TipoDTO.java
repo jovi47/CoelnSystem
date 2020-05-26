@@ -9,31 +9,22 @@ public class TipoDTO implements Serializable {
 
 	private Long id;
 	private String nome;
-	
+
 	public TipoDTO() {
 
 	}
 
-	public TipoDTO(Tipo tipo) {
-		this.id = tipo.getId();
-		this.nome = tipo.getNome();
+	public TipoDTO(Tipo obj) {
+		this.id = obj.getId();
+		this.nome = obj.getNome();
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getNome() {
 		return nome;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-
-	
 }

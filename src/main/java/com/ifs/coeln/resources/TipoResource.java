@@ -34,11 +34,11 @@ public class TipoResource {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<TipoDTO> findById(@PathVariable Long id) {
-		Tipo tipo = service.findById(id);
-		if (tipo.getIs_deleted() == true) {
+		Tipo obj = service.findById(id);
+		if (obj.getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Tipo", id);
 		}
-		return ResponseEntity.ok().body(new TipoDTO(tipo));
+		return ResponseEntity.ok().body(new TipoDTO(obj));
 	}
 
 	@PostMapping
@@ -54,9 +54,9 @@ public class TipoResource {
 			throw new ResourceNotFoundException("Tipo", id);
 		}
 		service.haveRelation(id);
-		Tipo tipo = new Tipo();
-		tipo.setIs_deleted(true);
-		service.update(id, tipo);
+		Tipo obj = new Tipo();
+		obj.setIs_deleted(true);
+		service.update(id, obj);
 		return ResponseEntity.noContent().build();
 	}
 

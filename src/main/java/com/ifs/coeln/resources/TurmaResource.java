@@ -34,11 +34,11 @@ public class TurmaResource {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<TurmaDTO> findById(@PathVariable Long id) {
-		Turma tipo = service.findById(id);
-		if (tipo.getIs_deleted()) {
+		Turma obj = service.findById(id);
+		if (obj.getIs_deleted()) {
 			throw new ResourceNotFoundException("Turma", id);
 		}
-		return ResponseEntity.ok().body(new TurmaDTO(tipo));
+		return ResponseEntity.ok().body(new TurmaDTO(obj));
 	}
 
 	@PostMapping
@@ -53,9 +53,9 @@ public class TurmaResource {
 		if (service.findById(id).getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Turma", id);
 		}
-		Turma turma = new Turma();
-		turma.setIs_deleted(true);
-		service.update(id, turma);
+		Turma obj = new Turma();
+		obj.setIs_deleted(true);
+		service.update(id, obj);
 		return ResponseEntity.noContent().build();
 	}
 

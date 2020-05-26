@@ -29,9 +29,9 @@ public class LaboratorioService {
 
 	private List<LaboratorioDTO> filterList(List<Laboratorio> list) {
 		List<LaboratorioDTO> dto = new ArrayList<>();
-		for (Laboratorio curso : list) {
-			if (curso.getIs_deleted() == false) {
-				dto.add(new LaboratorioDTO(curso));
+		for (Laboratorio laboratorio : list) {
+			if (laboratorio.getIs_deleted() == false) {
+				dto.add(new LaboratorioDTO(laboratorio));
 			}
 		}
 		return dto;

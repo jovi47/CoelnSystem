@@ -13,27 +13,18 @@ public class CursoDTO implements Serializable {
 	public CursoDTO() {
 
 	}
-	
-	public CursoDTO(Curso curso) {
-		this.id = curso.getId();
-		this.nome = curso.getNome();
+
+	public CursoDTO(Curso obj) {
+		this.id = obj.getId();
+		this.nome = obj.getNome();
 	}
 
 	public Long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getNome() {
 		return nome;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
-	
-	
 }

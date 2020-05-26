@@ -13,17 +13,13 @@ public class LaboratorioDTO implements Serializable {
 
 	}
 
-	public LaboratorioDTO(Laboratorio lab) {
-		this.id = lab.getId();
+	public LaboratorioDTO(Laboratorio obj) {
+		this.id = obj.getId();
 
 	}
 
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 }

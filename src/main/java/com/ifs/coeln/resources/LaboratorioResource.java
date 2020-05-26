@@ -21,7 +21,7 @@ import com.ifs.coeln.services.LaboratorioService;
 import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @RestController
-@RequestMapping(value = "/laboratorios")
+@RequestMapping(value = "/objoratorios")
 public class LaboratorioResource {
 
 	@Autowired
@@ -34,11 +34,11 @@ public class LaboratorioResource {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<LaboratorioDTO> findById(@PathVariable Long id) {
-		Laboratorio lab = service.findById(id);
-		if (lab.getIs_deleted() == true) {
+		Laboratorio obj = service.findById(id);
+		if (obj.getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Laboratorio", id);
 		}
-		return ResponseEntity.ok().body(new LaboratorioDTO(lab));
+		return ResponseEntity.ok().body(new LaboratorioDTO(obj));
 	}
 
 	@PostMapping
@@ -54,9 +54,9 @@ public class LaboratorioResource {
 			throw new ResourceNotFoundException("Laboratorio", id);
 		}
 		service.haveRelation(id);
-		Laboratorio lab = new Laboratorio();
-		lab.setIs_deleted(true);
-		service.update(id, lab);
+		Laboratorio obj = new Laboratorio();
+		obj.setIs_deleted(true);
+		service.update(id, obj);
 		return ResponseEntity.noContent().build();
 	}
 
