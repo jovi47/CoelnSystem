@@ -5,16 +5,12 @@ import java.io.Serializable;
 import com.ifs.coeln.entities.Item;
 
 public class ItemDTO implements Serializable {
-
 	private static final long serialVersionUID = 1L;
+
 	private Long id;
 	private ComponenteDTO componente;
 	private OrganizadorDTO organizador;
 	private Integer quantidade;
-
-	public ItemDTO() {
-
-	}
 
 	public ItemDTO(Item obj) {
 		this.id = obj.getId();

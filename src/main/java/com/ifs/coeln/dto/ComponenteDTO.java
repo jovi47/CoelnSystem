@@ -15,10 +15,6 @@ public class ComponenteDTO implements Serializable {
 	private String descricao;
 	private List<ObservacaoDTO> observacoes = new ArrayList<>();
 
-	public ComponenteDTO() {
-
-	}
-
 	public ComponenteDTO(Componente obj) {
 		this.id = obj.getId();
 		this.nome = obj.getNome();

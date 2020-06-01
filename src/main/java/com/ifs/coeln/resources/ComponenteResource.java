@@ -53,6 +53,7 @@ public class ComponenteResource {
 		if (service.findById(id).getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Componente", id);
 		}
+		service.haveRelation(id);
 		Componente obj = new Componente();
 		obj.setIs_deleted(true);
 		service.update(id, obj);

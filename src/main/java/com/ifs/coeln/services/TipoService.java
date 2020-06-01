@@ -12,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.TipoDTO;
+import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Tipo;
 import com.ifs.coeln.repositories.TipoRepository;
 import com.ifs.coeln.services.exceptions.DatabaseException;
@@ -19,7 +20,10 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class TipoService {
-
+	
+	@Autowired
+	private HistoricoService hisService;
+	
 	@Autowired
 	private TipoRepository repository;
 
@@ -46,6 +50,7 @@ public class TipoService {
 		try {
 		Tipo tipo = new Tipo(obj);
 		repository.save(tipo);
+		hisService.insert(new Historico(null, "inserido", tipo.getId().toString(), "Tipo", 1L));
 		return new TipoDTO(tipo);
 		}catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e, "tipo");
@@ -66,7 +71,7 @@ public class TipoService {
 		try {
 			Tipo entity = repository.getOne(id);
 			if(entity.getComponentes().size()!=0) {
-				throw new DatabaseException("Esse tipo possue relacao com outras tabelas, exclusao negada");
+				throw new DatabaseException("Esse tipo possui relacao com outras tabelas, exclusao negada");
 			}
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Tipo", id);
@@ -76,6 +81,7 @@ public class TipoService {
 		try {
 			Tipo entity = repository.getOne(id);
 			updateData(entity, obj);
+			hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Tipo", 1L));
 			return new TipoDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Tipo", id);

@@ -34,7 +34,7 @@ public class Organizador implements Serializable {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "organizador")
-	private List<Item> itens = new ArrayList<>();
+	protected List<Item> itens = new ArrayList<>();
 
 	public Organizador() {
 
@@ -70,6 +70,10 @@ public class Organizador implements Serializable {
 		this.is_deleted = is_deleted;
 	}
 
+	public List<Item> getItens() {
+		return itens;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -99,5 +103,5 @@ public class Organizador implements Serializable {
 	public String toString() {
 		return "Organizador [id=" + id + ", laboratorio=" + laboratorio + ", is_deleted=" + is_deleted + "]";
 	}
-	
+
 }

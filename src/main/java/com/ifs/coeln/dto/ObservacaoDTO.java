@@ -10,10 +10,6 @@ public class ObservacaoDTO implements Serializable {
 	private Long id;
 	private String texto;
 
-	public ObservacaoDTO() {
-
-	}
-
 	public ObservacaoDTO(Observacao obj) {
 		this.id = obj.getId();
 		this.texto = obj.getTexto();

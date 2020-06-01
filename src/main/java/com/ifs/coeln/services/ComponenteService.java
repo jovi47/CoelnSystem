@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.ComponenteDTO;
 import com.ifs.coeln.entities.Componente;
+import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Tipo;
 import com.ifs.coeln.repositories.ComponenteRepository;
 import com.ifs.coeln.services.exceptions.DatabaseException;
@@ -23,6 +24,9 @@ public class ComponenteService {
 
 	@Autowired
 	private TipoService tipoService;
+
+	@Autowired
+	private HistoricoService hisService;
 
 	@Autowired
 	private ComponenteRepository repository;
@@ -46,6 +50,17 @@ public class ComponenteService {
 		return obj.orElseThrow(() -> new ResourceNotFoundException("Componente", id));
 	}
 
+	public void haveRelation(Long id) {
+		try {
+			Componente entity = repository.getOne(id);
+			if (entity.getObservacoes().size() != 0 || entity.getItens().size() != 0) {
+				throw new DatabaseException("Esse componente possui relacao com outras tabelas, exclusao negada");
+			}
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Componente", id);
+		}
+	}
+
 	public ComponenteDTO insert(Componente obj) {
 		try {
 			Componente componente = new Componente(obj);
@@ -55,6 +70,7 @@ public class ComponenteService {
 			}
 			componente = repository.save(componente);
 			componente.setTipo(tipo);
+			hisService.insert(new Historico(null, "inserido", componente.getId().toString(), "Componente", 1L));
 			return new ComponenteDTO(componente);
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e, "componente");
@@ -76,6 +92,9 @@ public class ComponenteService {
 		try {
 			Componente entity = repository.getOne(id);
 			updateData(entity, obj);
+			if (entity.getIs_deleted()) {
+				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Componente", 1L));
+			}
 			return new ComponenteDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Componente", id);

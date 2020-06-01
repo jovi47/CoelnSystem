@@ -12,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.OrganizadorDTO;
+import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Laboratorio;
 import com.ifs.coeln.entities.Organizador;
 import com.ifs.coeln.repositories.OrganizadorRepository;
@@ -23,6 +24,10 @@ public class OrganizadorService {
 
 	@Autowired
 	private LaboratorioService labService;
+
+	@Autowired
+	private HistoricoService hisService;
+
 	@Autowired
 	private OrganizadorRepository repository;
 
@@ -54,6 +59,7 @@ public class OrganizadorService {
 			Organizador org = new Organizador(obj);
 			org.setLaboratorio(lab);
 			repository.save(org);
+			hisService.insert(new Historico(null, "inserido", org.getId().toString(), "Organizador", 1L));
 			return new OrganizadorDTO(org);
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e, "organizador");
@@ -70,11 +76,24 @@ public class OrganizadorService {
 		}
 	}
 
+	public void haveRelation(Long id) {
+		try {
+			Organizador entity = repository.getOne(id);
+			if (entity.getItens().size() != 0) {
+				throw new DatabaseException("Esse organizador possui relacao com outras tabelas, exclusao negada");
+			}
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Organizador", id);
+		}
+	}
+
 	public OrganizadorDTO update(Long id, Organizador obj) {
 		try {
 			Organizador entity = repository.getOne(id);
-
 			updateData(entity, obj);
+			if (entity.getIs_deleted()) {
+				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Organizador", 1L));
+			}
 			return new OrganizadorDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Organizador", id);

@@ -5,15 +5,10 @@ import java.io.Serializable;
 import com.ifs.coeln.entities.Organizador;
 
 public class OrganizadorDTO implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private LaboratorioDTO laboratorio;
-
-	public OrganizadorDTO() {
-
-	}
 
 	public OrganizadorDTO(Organizador obj) {
 		this.id = obj.getId();

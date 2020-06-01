@@ -43,7 +43,6 @@ public class ObservacaoResource {
 
 	@PostMapping
 	public ResponseEntity<ObservacaoDTO> insert(@RequestBody Observacao obj) {
-		System.out.println(obj);
 		ObservacaoDTO dto = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);

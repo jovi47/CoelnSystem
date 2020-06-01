@@ -21,7 +21,7 @@ import com.ifs.coeln.services.LaboratorioService;
 import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @RestController
-@RequestMapping(value = "/objoratorios")
+@RequestMapping(value = "/laboratorios")
 public class LaboratorioResource {
 
 	@Autowired

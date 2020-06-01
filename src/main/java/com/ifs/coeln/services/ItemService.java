@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.ItemDTO;
 import com.ifs.coeln.entities.Componente;
+import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Item;
 import com.ifs.coeln.entities.Organizador;
 import com.ifs.coeln.repositories.ItemRepository;
@@ -23,7 +24,11 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 public class ItemService {
 
 	@Autowired
+	private HistoricoService hisService;
+	
+	@Autowired
 	private OrganizadorService orgService;
+	
 	@Autowired
 	private ComponenteService compService;
 
@@ -63,6 +68,7 @@ public class ItemService {
 			item = repository.save(item);
 			item.setComponente(componente);
 			item.setOrganizador(organizador);
+			hisService.insert(new Historico(null, "inserido", item.getId().toString(), "Item", 1L));
 			return new ItemDTO(item);
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e, "item");
@@ -84,6 +90,9 @@ public class ItemService {
 		try {
 			Item entity = repository.getOne(id);
 			updateData(entity, obj);
+			if (entity.getIs_deleted()) {
+				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Item", 1L));
+			}
 			return new ItemDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Item", id);

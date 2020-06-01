@@ -10,10 +10,6 @@ public class TurmaDTO implements Serializable {
 	private Long id;
 	private String nome;
 
-	public TurmaDTO() {
-
-	}
-
 	public TurmaDTO(Turma obj) {
 		this.id = obj.getId();
 		this.nome = obj.getNome();

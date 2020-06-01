@@ -12,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.TurmaDTO;
+import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Turma;
 import com.ifs.coeln.repositories.TurmaRepository;
 import com.ifs.coeln.services.exceptions.DatabaseException;
@@ -19,7 +20,10 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class TurmaService {
-
+	
+	@Autowired
+	private HistoricoService hisService;
+	
 	@Autowired
 	private TurmaRepository repository;
 
@@ -46,6 +50,7 @@ public class TurmaService {
 		try {
 			Turma tipo = new Turma(obj);
 			repository.save(tipo);
+			hisService.insert(new Historico(null, "inserido", tipo.getId().toString(), "Turma", 1L));
 			return new TurmaDTO(tipo);
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e, "turma");
@@ -67,6 +72,7 @@ public class TurmaService {
 			Turma entity = repository.getOne(id);
 
 			updateData(entity, obj);
+			hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Turma", 1L));
 			return new TurmaDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Turma", id);

@@ -41,15 +41,13 @@ public class Historico implements Serializable {
 
 	}
 
-	public Historico(Long id, String insercao_delecao, String id_objeto, String nome_tabela, Long login_id,
-			Instant data) {
-		super();
+	public Historico(Long id, String insercao_delecao, String id_objeto, String nome_tabela, Long login_id) {
 		this.id = id;
 		this.insercao_delecao = insercao_delecao;
 		this.id_objeto = id_objeto;
 		this.nome_tabela = nome_tabela;
 		this.login_id = login_id;
-		this.data = data;
+		this.data = Instant.now();
 	}
 
 	public Long getId() {

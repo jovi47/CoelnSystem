@@ -22,6 +22,7 @@ public class Laboratorio implements Serializable {
 
 	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
+	
 	@JsonIgnore
 	@OneToMany(mappedBy = "laboratorio")
 	private List<Organizador> organizadores = new ArrayList<>();

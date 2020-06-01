@@ -13,13 +13,17 @@ import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.CursoDTO;
 import com.ifs.coeln.entities.Curso;
+import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.repositories.CursoRepository;
 import com.ifs.coeln.services.exceptions.DatabaseException;
 import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class CursoService {
-
+	
+	@Autowired
+	private HistoricoService hisService;
+	
 	@Autowired
 	private CursoRepository repository;
 
@@ -44,9 +48,10 @@ public class CursoService {
 
 	public CursoDTO insert(Curso obj) {
 		try {
-			Curso tipo = new Curso(obj);
-			repository.save(tipo);
-			return new CursoDTO(tipo);
+			Curso curso = new Curso(obj);
+			repository.save(curso);
+			hisService.insert(new Historico(null, "inserido", curso.getId().toString(), "Curso", 1L));
+			return new CursoDTO(curso);
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e, "curso");
 		}
@@ -65,8 +70,10 @@ public class CursoService {
 	public CursoDTO update(Long id, Curso obj) {
 		try {
 			Curso entity = repository.getOne(id);
-
 			updateData(entity, obj);
+			if(entity.getIs_deleted()) {
+				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Curso", 1L));
+			}
 			return new CursoDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Curso", id);

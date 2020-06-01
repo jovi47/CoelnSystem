@@ -10,10 +10,6 @@ public class TipoDTO implements Serializable {
 	private Long id;
 	private String nome;
 
-	public TipoDTO() {
-
-	}
-
 	public TipoDTO(Tipo obj) {
 		this.id = obj.getId();
 		this.nome = obj.getNome();

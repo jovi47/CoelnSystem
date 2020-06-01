@@ -43,7 +43,6 @@ public class OrganizadorResource {
 
 	@PostMapping
 	public ResponseEntity<OrganizadorDTO> insert(@RequestBody Organizador obj) {
-		System.out.println(obj);
 		OrganizadorDTO dto = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);
@@ -54,6 +53,7 @@ public class OrganizadorResource {
 		if (service.findById(id).getIs_deleted() == true) {
 			throw new ResourceNotFoundException("Organizador", id);
 		}
+		service.haveRelation(id);
 		Organizador obj = new Organizador();
 		obj.setIs_deleted(true);
 		service.update(id, obj);

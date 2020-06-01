@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.ObservacaoDTO;
 import com.ifs.coeln.entities.Componente;
+import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Observacao;
 import com.ifs.coeln.repositories.ObservacaoRepository;
 import com.ifs.coeln.services.exceptions.DatabaseException;
@@ -20,9 +21,13 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ObservacaoService {
-
+	
+	@Autowired
+	private HistoricoService hisService;
+	
 	@Autowired
 	private ComponenteService compService;
+	
 	@Autowired
 	private ObservacaoRepository repository;
 
@@ -54,6 +59,7 @@ public class ObservacaoService {
 			Observacao org = new Observacao(obj);
 			org.setComponente(comp);
 			repository.save(org);
+			hisService.insert(new Historico(null, "inserido", org.getId().toString(), "Observacao", 1L));
 			return new ObservacaoDTO(org);
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e, "observacao");
@@ -74,6 +80,7 @@ public class ObservacaoService {
 		try {
 			Observacao entity = repository.getOne(id);
 			updateData(entity, obj);
+			hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Observacao", 1L));
 			return new ObservacaoDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Observacao", id);
