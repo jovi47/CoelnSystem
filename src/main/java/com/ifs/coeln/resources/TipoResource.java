@@ -27,6 +27,12 @@ public class TipoResource {
 	@Autowired
 	private TipoService service;
 
+	private void checkIfDeleted(Tipo obj, Long id) {
+		if (obj.getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Tipo", id);
+		}
+	}
+
 	@GetMapping
 	public ResponseEntity<List<TipoDTO>> findAll() {
 		return ResponseEntity.ok().body(service.findAll());
@@ -35,9 +41,7 @@ public class TipoResource {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<TipoDTO> findById(@PathVariable Long id) {
 		Tipo obj = service.findById(id);
-		if (obj.getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Tipo", id);
-		}
+		checkIfDeleted(obj, id);
 		return ResponseEntity.ok().body(new TipoDTO(obj));
 	}
 
@@ -50,21 +54,21 @@ public class TipoResource {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Tipo", id);
-		}
+		checkIfDeleted(service.findById(id), id);
+		verifyIfRelationAndDelete(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	private void verifyIfRelationAndDelete(Long id) {
 		service.haveRelation(id);
 		Tipo obj = new Tipo();
 		obj.setIs_deleted(true);
 		service.update(id, obj);
-		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<TipoDTO> update(@PathVariable Long id, @RequestBody Tipo obj) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Tipo", id);
-		}
+		checkIfDeleted(service.findById(id), id);
 		return ResponseEntity.ok().body(service.update(id, obj));
 	}
 }

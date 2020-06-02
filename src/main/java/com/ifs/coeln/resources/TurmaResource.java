@@ -27,6 +27,12 @@ public class TurmaResource {
 	@Autowired
 	private TurmaService service;
 
+	private void checkIfDeleted(Turma obj, Long id) {
+		if (obj.getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Tipo", id);
+		}
+	}
+
 	@GetMapping
 	public ResponseEntity<List<TurmaDTO>> findAll() {
 		return ResponseEntity.ok().body(service.findAll());
@@ -35,9 +41,7 @@ public class TurmaResource {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<TurmaDTO> findById(@PathVariable Long id) {
 		Turma obj = service.findById(id);
-		if (obj.getIs_deleted()) {
-			throw new ResourceNotFoundException("Turma", id);
-		}
+		checkIfDeleted(obj, id);
 		return ResponseEntity.ok().body(new TurmaDTO(obj));
 	}
 
@@ -50,20 +54,20 @@ public class TurmaResource {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Turma", id);
-		}
+		checkIfDeleted(service.findById(id), id);
+		verifyIfRelationAndDelete(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	private void verifyIfRelationAndDelete(Long id) {
 		Turma obj = new Turma();
 		obj.setIs_deleted(true);
 		service.update(id, obj);
-		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<TurmaDTO> update(@PathVariable Long id, @RequestBody Turma obj) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Turma", id);
-		}
+		checkIfDeleted(service.findById(id), id);
 		return ResponseEntity.ok().body(service.update(id, obj));
 	}
 }

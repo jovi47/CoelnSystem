@@ -24,10 +24,15 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 @RequestMapping(value = "/itens")
 public class ItemResource {
 
-
 	@Autowired
 	private ItemService service;
-
+	
+	private void checkIfDeleted(Item obj, Long id) {
+		if (obj.getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Item", id);
+		}
+	}
+	
 	@GetMapping
 	public ResponseEntity<List<ItemDTO>> findAll() {
 		return ResponseEntity.ok().body(service.findAll());
@@ -36,9 +41,7 @@ public class ItemResource {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ItemDTO> findById(@PathVariable Long id) {
 		Item obj = service.findById(id);
-		if (obj.getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Item", id);
-		}
+		checkIfDeleted(obj, id);
 		return ResponseEntity.ok().body(new ItemDTO(obj));
 	}
 
@@ -51,20 +54,20 @@ public class ItemResource {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Item", id);
-		}
-		Item obj = new Item();
-		obj.setIs_deleted(true);
-		service.update(id, obj);
+		checkIfDeleted(service.findById(id), id);
+		verifyIfRelationAndDelete(id);
 		return ResponseEntity.noContent().build();
 	}
 
+	private void verifyIfRelationAndDelete(Long id) {
+		Item obj = new Item();
+		obj.setIs_deleted(true);
+		service.update(id, obj);
+	}
+	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<ItemDTO> update(@PathVariable Long id, @RequestBody Item obj) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Item", id);
-		}
+		checkIfDeleted(service.findById(id), id);
 		return ResponseEntity.ok().body(service.update(id, obj));
 	}
 }

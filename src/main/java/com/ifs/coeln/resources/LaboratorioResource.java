@@ -26,7 +26,13 @@ public class LaboratorioResource {
 
 	@Autowired
 	private LaboratorioService service;
-
+	
+	private void checkIfDeleted(Laboratorio obj, Long id) {
+		if (obj.getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Laboratorio", id);
+		}
+	}
+	
 	@GetMapping
 	public ResponseEntity<List<LaboratorioDTO>> findAll() {
 		return ResponseEntity.ok().body(service.findAll());
@@ -35,9 +41,7 @@ public class LaboratorioResource {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<LaboratorioDTO> findById(@PathVariable Long id) {
 		Laboratorio obj = service.findById(id);
-		if (obj.getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Laboratorio", id);
-		}
+		checkIfDeleted(obj, id);
 		return ResponseEntity.ok().body(new LaboratorioDTO(obj));
 	}
 
@@ -50,21 +54,22 @@ public class LaboratorioResource {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Laboratorio", id);
-		}
+		checkIfDeleted(service.findById(id), id);
+		verifyIfRelationAndDelete(id);
+		return ResponseEntity.noContent().build();
+	}
+	
+	private void verifyIfRelationAndDelete(Long id) {
 		service.haveRelation(id);
 		Laboratorio obj = new Laboratorio();
 		obj.setIs_deleted(true);
 		service.update(id, obj);
-		return ResponseEntity.noContent().build();
 	}
-
+	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<LaboratorioDTO> update(@PathVariable Long id, @RequestBody Laboratorio obj) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Laboratorio", id);
-		}
+		checkIfDeleted(service.findById(id), id);
 		return ResponseEntity.ok().body(service.update(id, obj));
 	}
+	
 }

@@ -27,6 +27,12 @@ public class ComponenteResource {
 	@Autowired
 	private ComponenteService service;
 
+	private void checkIfDeleted(Componente obj, Long id) {
+		if (obj.getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Componente", id);
+		}
+	}
+
 	@GetMapping
 	public ResponseEntity<List<ComponenteDTO>> findAll() {
 		return ResponseEntity.ok().body(service.findAll());
@@ -35,9 +41,7 @@ public class ComponenteResource {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ComponenteDTO> findById(@PathVariable Long id) {
 		Componente obj = service.findById(id);
-		if (obj.getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Componente", id);
-		}
+		checkIfDeleted(obj, id);
 		return ResponseEntity.ok().body(new ComponenteDTO(obj));
 	}
 
@@ -50,21 +54,21 @@ public class ComponenteResource {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Componente", id);
-		}
+		checkIfDeleted(service.findById(id), id);
+		verifyRelationAndDelete(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	private void verifyRelationAndDelete(Long id) {
 		service.haveRelation(id);
 		Componente obj = new Componente();
 		obj.setIs_deleted(true);
 		service.update(id, obj);
-		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<ComponenteDTO> update(@PathVariable Long id, @RequestBody Componente obj) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Componente", id);
-		}
+		checkIfDeleted(service.findById(id), id);
 		return ResponseEntity.ok().body(service.update(id, obj));
 	}
 }

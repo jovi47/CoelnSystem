@@ -27,6 +27,12 @@ public class OrganizadorResource {
 	@Autowired
 	private OrganizadorService service;
 
+	private void checkIfDeleted(Organizador obj, Long id) {
+		if (obj.getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Item", id);
+		}
+	}
+
 	@GetMapping
 	public ResponseEntity<List<OrganizadorDTO>> findAll() {
 		return ResponseEntity.ok().body(service.findAll());
@@ -35,9 +41,7 @@ public class OrganizadorResource {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<OrganizadorDTO> findById(@PathVariable Long id) {
 		Organizador obj = service.findById(id);
-		if (obj.getIs_deleted()) {
-			throw new ResourceNotFoundException("Organizador", id);
-		}
+		checkIfDeleted(obj, id);
 		return ResponseEntity.ok().body(new OrganizadorDTO(obj));
 	}
 
@@ -50,21 +54,21 @@ public class OrganizadorResource {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Organizador", id);
-		}
+		checkIfDeleted(service.findById(id), id);
+		verifyIfRelationAndDelete(id);
+		return ResponseEntity.noContent().build();
+	}
+	
+	private void verifyIfRelationAndDelete(Long id) {
 		service.haveRelation(id);
 		Organizador obj = new Organizador();
 		obj.setIs_deleted(true);
 		service.update(id, obj);
-		return ResponseEntity.noContent().build();
 	}
-
+	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<OrganizadorDTO> update(@PathVariable Long id, @RequestBody Organizador obj) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Organizador", id);
-		}
+		checkIfDeleted(service.findById(id), id);
 		return ResponseEntity.ok().body(service.update(id, obj));
 	}
 

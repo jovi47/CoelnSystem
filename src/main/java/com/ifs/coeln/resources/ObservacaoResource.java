@@ -26,7 +26,13 @@ public class ObservacaoResource {
 	
 	@Autowired
 	private ObservacaoService service;
-
+	
+	private void checkIfDeleted(Observacao obj, Long id) {
+		if (obj.getIs_deleted() == true) {
+			throw new ResourceNotFoundException("Observacao", id);
+		}
+	}
+	
 	@GetMapping
 	public ResponseEntity<List<ObservacaoDTO>> findAll() {
 		return ResponseEntity.ok().body(service.findAll());
@@ -35,9 +41,7 @@ public class ObservacaoResource {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ObservacaoDTO> findById(@PathVariable Long id) {
 		Observacao obj = service.findById(id);
-		if (obj.getIs_deleted()) {
-			throw new ResourceNotFoundException("Observacao", id);
-		}
+		checkIfDeleted(obj, id);
 		return ResponseEntity.ok().body(new ObservacaoDTO(obj));
 	}
 
@@ -50,20 +54,20 @@ public class ObservacaoResource {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Observacao", id);
-		}
+		checkIfDeleted(service.findById(id), id);
+		verifyIfRelationAndDelete(id);
+		return ResponseEntity.noContent().build();
+	}
+	
+	private void verifyIfRelationAndDelete(Long id) {
 		Observacao obj = new Observacao();
 		obj.setIs_deleted(true);
 		service.update(id, obj);
-		return ResponseEntity.noContent().build();
 	}
-
+	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<ObservacaoDTO> update(@PathVariable Long id, @RequestBody Observacao obj) {
-		if (service.findById(id).getIs_deleted() == true) {
-			throw new ResourceNotFoundException("Observacao", id);
-		}
+		checkIfDeleted(service.findById(id), id);
 		return ResponseEntity.ok().body(service.update(id, obj));
 	}
 	
