@@ -40,16 +40,15 @@ public class Usuario implements Serializable {
 
 	}
 
-	public Usuario(String matricula, String nome, Curso curso, Turma turma, String nome_projeto, Boolean is_servidor,
-			Boolean is_deleted) {
+	public Usuario(Usuario usuario) {
 		super();
-		this.matricula = matricula;
-		this.nome = nome;
-		this.curso = curso;
-		this.turma = turma;
-		this.nome_projeto = nome_projeto;
-		this.is_servidor = is_servidor;
-		this.is_deleted = is_deleted;
+		this.matricula =usuario.getMatricula();
+		this.nome = usuario.getNome();
+		this.curso = usuario.getCurso();
+		this.turma = usuario.getTurma();
+		this.nome_projeto = usuario.getNome_projeto();
+		this.is_servidor = usuario.getIs_servidor();
+		this.is_deleted =(usuario.getIs_deleted() == null) ? false : false;;
 	}
 
 	public String getMatricula() {
@@ -133,4 +132,10 @@ public class Usuario implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Usuario [matricula=" + matricula + ", curso=" + curso + ", turma=" + turma + ", nome_projeto="
+				+ nome_projeto + ", is_servidor=" + is_servidor + ", is_deleted=" + is_deleted + ", nome=" + nome + "]";
+	}
+	
 }
