@@ -2,6 +2,8 @@ package com.ifs.coeln.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -34,21 +37,24 @@ public class Pedido implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "usuario_id", nullable = false)
 	private Usuario usuario;
-	
+
 	@Column(columnDefinition = "boolean default false")
 	private Boolean is_deleted;
+
+	@OneToMany(mappedBy = "id.pedido")
+	private Set<PedidoComponente> items = new HashSet<>();
 
 	public Pedido() {
 
 	}
 
-	public Pedido(Long id, Instant data_entregue, Instant data_devolucao, Usuario usuario, Boolean is_deleted) {
-		super();
-		this.id = id;
-		this.data_entregue = data_entregue;
-		this.data_devolucao = data_devolucao;
-		this.usuario = usuario;
-		this.is_deleted = is_deleted;
+	public Pedido(Pedido obj) {
+		this.id = obj.getId();
+		this.data_entregue = (obj.getData_entregue() == null) ? Instant.now() : obj.getData_entregue();
+		this.data_devolucao = obj.getData_devolucao();
+		this.usuario = obj.getUsuario();
+		this.is_deleted = (obj.getIs_deleted() == null) ? false : false;
+		this.items = obj.getItems();
 	}
 
 	public Long getId() {
@@ -89,6 +95,10 @@ public class Pedido implements Serializable {
 
 	public void setIs_deleted(Boolean is_deleted) {
 		this.is_deleted = is_deleted;
+	}
+
+	public Set<PedidoComponente> getItems() {
+		return items;
 	}
 
 	@Override

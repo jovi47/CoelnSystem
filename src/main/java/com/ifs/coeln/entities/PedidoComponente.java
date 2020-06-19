@@ -7,6 +7,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ifs.coeln.entities.pk.PedidoComponentePK;
 
 @Entity
@@ -33,7 +34,7 @@ public class PedidoComponente implements Serializable {
 	public void setPedido(Pedido pedido) {
 		id.setPedido(pedido);
 	}
-
+	@JsonIgnore
 	public Pedido getPedido() {
 		return id.getPedido();
 	}
@@ -79,4 +80,10 @@ public class PedidoComponente implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "PedidoComponente [id=" + id + ", quantidade=" + quantidade + "]";
+	}
+	
+	
 }

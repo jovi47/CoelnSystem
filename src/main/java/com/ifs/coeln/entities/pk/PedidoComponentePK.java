@@ -67,4 +67,11 @@ public class PedidoComponentePK implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "PedidoComponentePK [componente=" + componente + ", pedido=" + pedido + "]";
+	}
+
+	
+	
 }
