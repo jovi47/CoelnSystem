@@ -17,7 +17,7 @@ public class PedidoComponente implements Serializable {
 
 	@EmbeddedId
 	private PedidoComponentePK id = new PedidoComponentePK();
-	
+
 	@Column(nullable = false)
 	private Integer quantidade;
 
@@ -34,6 +34,7 @@ public class PedidoComponente implements Serializable {
 	public void setPedido(Pedido pedido) {
 		id.setPedido(pedido);
 	}
+
 	@JsonIgnore
 	public Pedido getPedido() {
 		return id.getPedido();
@@ -80,10 +81,4 @@ public class PedidoComponente implements Serializable {
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		return "PedidoComponente [id=" + id + ", quantidade=" + quantidade + "]";
-	}
-	
-	
 }

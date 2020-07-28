@@ -23,4 +23,10 @@ public class TipoDTO implements Serializable {
 		return nome;
 	}
 
+	@Override
+	public String toString() {
+		return "Tipo [id=" + id + ", nome=" + nome + "]";
+	}
+	
+	
 }

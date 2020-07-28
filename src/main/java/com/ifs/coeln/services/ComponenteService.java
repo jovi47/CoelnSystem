@@ -12,6 +12,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.ComponenteDTO;
+import com.ifs.coeln.dto.TipoDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Componente;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Tipo;
@@ -28,6 +31,8 @@ public class ComponenteService {
 	@Autowired
 	private HistoricoService hisService;
 
+	@Autowired
+	private AtualizacaoService atlService;
 	@Autowired
 	private ComponenteRepository repository;
 
@@ -91,9 +96,11 @@ public class ComponenteService {
 	public ComponenteDTO update(Long id, Componente obj) {
 		try {
 			Componente entity = repository.getOne(id);
-			updateData(entity, obj);
+			List<Alteracao> alteracoes = updateData(entity, obj);
 			if (entity.getIs_deleted()) {
 				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Componente", 1L));
+			} else {
+				atlService.insert(new Atualizacao(null, entity.getId().toString(), "Componente", 1L), alteracoes);
 			}
 			return new ComponenteDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
@@ -103,13 +110,27 @@ public class ComponenteService {
 		}
 	}
 
-	private void updateData(Componente entity, Componente obj) {
-		entity.setDescricao((obj.getDescricao() == null) ? entity.getDescricao() : obj.getDescricao());
+	private List<Alteracao> updateData(Componente entity, Componente obj) {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		entity.setNome((obj.getNome() == null) ? entity.getNome() : obj.getNome());
-		if (obj.getTipo() == null) {
-		} else {
-			entity.setTipo(tipoService.findById(obj.getTipo().getId()));
+		List<Alteracao> alteracoes = new ArrayList<>();
+		if (obj.getDescricao() != null) {
+			String descricao = entity.getDescricao();
+			entity.setDescricao(obj.getDescricao());
+			alteracoes.add(new Alteracao("Descrição", descricao, obj.getDescricao()));
 		}
+		if (obj.getNome() != null) {
+			String nome = entity.getNome();
+			entity.setNome(obj.getNome());
+			alteracoes.add(new Alteracao("Nome", nome, obj.getNome()));
+		}
+		if (obj.getTipo() != null) {
+			Tipo tipo = tipoService.findById(entity.getTipo().getId());
+			entity.setTipo(tipoService.findById(obj.getTipo().getId()));
+			alteracoes
+					.add(new Alteracao("Tipo", new TipoDTO(tipo).toString(), new TipoDTO(entity.getTipo()).toString()));
+		} else {
+			entity.setTipo(tipoService.findById(entity.getTipo().getId()));
+		}
+		return alteracoes;
 	}
 }
