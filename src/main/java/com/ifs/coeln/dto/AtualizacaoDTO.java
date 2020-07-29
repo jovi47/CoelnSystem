@@ -1,6 +1,7 @@
 package com.ifs.coeln.dto;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ public class AtualizacaoDTO implements Serializable {
 	private Long login_id;
 	private String id_objeto;
 	private String nome_tabela;
+	private Instant data;
 	private Set<AtualizacaoAlteracaoDTO> mudancas = new HashSet<>();
 
 	public AtualizacaoDTO(Atualizacao atualizacao) {
@@ -20,7 +22,12 @@ public class AtualizacaoDTO implements Serializable {
 		this.id_objeto = atualizacao.getId_objeto();
 		this.login_id = atualizacao.getLogin_id();
 		this.nome_tabela = atualizacao.getNome_tabela();
+		this.data = atualizacao.getData();
 		atualizacao.getMudancas().forEach(x -> mudancas.add(new AtualizacaoAlteracaoDTO(x)));
+	}
+
+	public Instant getData() {
+		return data;
 	}
 
 	public Long getId() {

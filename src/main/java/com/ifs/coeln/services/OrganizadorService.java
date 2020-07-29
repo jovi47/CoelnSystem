@@ -11,7 +11,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.ifs.coeln.dto.LaboratorioDTO;
 import com.ifs.coeln.dto.OrganizadorDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Laboratorio;
 import com.ifs.coeln.entities.Organizador;
@@ -22,6 +25,8 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 @Service
 public class OrganizadorService {
 
+	@Autowired
+	private AtualizacaoService atlService;
 	@Autowired
 	private LaboratorioService labService;
 
@@ -90,9 +95,11 @@ public class OrganizadorService {
 	public OrganizadorDTO update(Long id, Organizador obj) {
 		try {
 			Organizador entity = repository.getOne(id);
-			updateData(entity, obj);
+			List<Alteracao> alteracoes = updateData(entity, obj);
 			if (entity.getIs_deleted()) {
 				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Organizador", 1L));
+			} else {
+				atlService.insert(new Atualizacao(null, entity.getId().toString(), "Organizador", 1L), alteracoes);
 			}
 			return new OrganizadorDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
@@ -102,11 +109,17 @@ public class OrganizadorService {
 		}
 	}
 
-	private void updateData(Organizador entity, Organizador obj) {
+	private List<Alteracao> updateData(Organizador entity, Organizador obj) {
+		List<Alteracao> alteracoes = new ArrayList<>();
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		if (obj.getLaboratorio() == null) {
-		} else {
+		if (obj.getLaboratorio() != null) {
+			Laboratorio laboratorio = labService.findById(entity.getLaboratorio().getId());
 			entity.setLaboratorio(labService.findById(obj.getLaboratorio().getId()));
+			alteracoes.add(new Alteracao("Laboratorio", new LaboratorioDTO(laboratorio).toString(),
+					new LaboratorioDTO(entity.getLaboratorio()).toString()));
+		} else {
+			entity.setLaboratorio(labService.findById(entity.getLaboratorio().getId()));
 		}
+		return alteracoes;
 	}
 }

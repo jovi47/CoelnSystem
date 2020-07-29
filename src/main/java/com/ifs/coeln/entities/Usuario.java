@@ -134,8 +134,9 @@ public class Usuario implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Usuario [matricula=" + matricula + ", curso=" + curso + ", turma=" + turma + ", nome_projeto="
-				+ nome_projeto + ", is_servidor=" + is_servidor + ", is_deleted=" + is_deleted + ", nome=" + nome + "]";
+		return "[matricula=" + matricula + "]";
 	}
+
+	
 	
 }

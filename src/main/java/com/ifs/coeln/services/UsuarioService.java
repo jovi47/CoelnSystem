@@ -12,7 +12,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.AlunoDTO;
+import com.ifs.coeln.dto.CursoDTO;
 import com.ifs.coeln.dto.ServidorDTO;
+import com.ifs.coeln.dto.TurmaDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Curso;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Turma;
@@ -24,6 +28,9 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 @Service
 public class UsuarioService {
 
+	@Autowired
+	private AtualizacaoService atlService;
+	
 	@Autowired
 	private UsuarioRepository repository;
 
@@ -92,9 +99,11 @@ public class UsuarioService {
 	public AlunoDTO updateAluno(String id, Usuario obj) {
 		try {
 			Usuario entity = repository.getOne(id);
-			updateDataAluno(entity, obj);
+			List<Alteracao> alteracoes = updateDataAluno(entity, obj);
 			if (entity.getIs_deleted()) {
 				hisService.insert(new Historico(null, "deletado", entity.getMatricula(), "Aluno", 1L));
+			}else {
+				atlService.insert(new Atualizacao(null, entity.getMatricula().toString(), "Aluno", 1L), alteracoes);
 			}
 			return new AlunoDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
@@ -104,18 +113,36 @@ public class UsuarioService {
 		}
 	}
 
-	private void updateDataAluno(Usuario entity, Usuario obj) {
-		entity.setNome((obj.getNome() == null) ? entity.getNome() : obj.getNome());
-		entity.setNome_projeto((obj.getNome_projeto() == null) ? entity.getNome_projeto() : obj.getNome_projeto());
+	private List<Alteracao> updateDataAluno(Usuario entity, Usuario obj) {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		if (obj.getCurso() == null) {
-		} else {
+		List<Alteracao> alteracoes = new ArrayList<>();
+		if (obj.getNome() != null) {
+			String nome = entity.getNome();
+			entity.setNome(obj.getNome());
+			alteracoes.add(new Alteracao("Nome", nome, obj.getNome()));
+		}
+		if (obj.getNome_projeto() != null) {
+			String nome_projeto = entity.getNome_projeto();
+			entity.setNome_projeto(obj.getNome_projeto());
+			alteracoes.add(new Alteracao("Nome_projeto", nome_projeto, obj.getNome_projeto()));
+		}
+		if (obj.getCurso() != null) {
+			Curso curso = cursoService.findById(entity.getCurso().getId());
 			entity.setCurso(cursoService.findById(obj.getCurso().getId()));
-		}
-		if (obj.getTurma() == null) {
+			alteracoes
+					.add(new Alteracao("Curso", new CursoDTO(curso).toString(), new CursoDTO(entity.getCurso()).toString()));
 		} else {
-			entity.setTurma(turmaService.findById(obj.getTurma().getId()));
+			entity.setCurso(cursoService.findById(entity.getCurso().getId()));
 		}
+		if (obj.getTurma() != null) {
+			Turma turma = turmaService.findById(entity.getTurma().getId());
+			entity.setTurma(turmaService.findById(obj.getTurma().getId()));
+			alteracoes
+					.add(new Alteracao("Turma", new TurmaDTO(turma).toString(), new TurmaDTO(entity.getTurma()).toString()));
+		} else {
+			entity.setTurma(turmaService.findById(entity.getCurso().getId()));
+		}
+		return alteracoes;
 	}
 	////////////////////////
 
@@ -132,7 +159,7 @@ public class UsuarioService {
 		}
 		return dto;
 	}
-
+	
 	public ServidorDTO insertServidor(Usuario obj) {
 		try {
 			obj.setIs_servidor(true);
@@ -150,13 +177,15 @@ public class UsuarioService {
 			throw new DatabaseException(e, "aluno");
 		}
 	}
-
+	
 	public ServidorDTO updateServidor(String id, Usuario obj) {
 		try {
 			Usuario entity = repository.getOne(id);
-			updateDataServidor(entity, obj);
+			List<Alteracao> alteracoes = updateDataServidor(entity, obj);
 			if (entity.getIs_deleted()) {
 				hisService.insert(new Historico(null, "deletado", entity.getMatricula(), "Servidor", 1L));
+			}else {
+				atlService.insert(new Atualizacao(null, entity.getMatricula().toString(), "Servidor", 1L), alteracoes);
 			}
 			return new ServidorDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
@@ -166,13 +195,23 @@ public class UsuarioService {
 		}
 	}
 
-	private void updateDataServidor(Usuario entity, Usuario obj) {
-		entity.setNome((obj.getNome() == null) ? entity.getNome() : obj.getNome());
+	private List<Alteracao> updateDataServidor(Usuario entity, Usuario obj) {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		if (obj.getCurso() == null) {
-		} else {
-			entity.setCurso(cursoService.findById(obj.getCurso().getId()));
+		List<Alteracao> alteracoes = new ArrayList<>();
+		if (obj.getNome() != null) {
+			String nome = entity.getNome();
+			entity.setNome(obj.getNome());
+			alteracoes.add(new Alteracao("Nome", nome, obj.getNome()));
 		}
+		if (obj.getCurso() != null) {
+			Curso curso = cursoService.findById(entity.getCurso().getId());
+			entity.setCurso(cursoService.findById(obj.getCurso().getId()));
+			alteracoes
+					.add(new Alteracao("Curso", new CursoDTO(curso).toString(), new CursoDTO(entity.getCurso()).toString()));
+		} else {
+			entity.setCurso(cursoService.findById(entity.getCurso().getId()));
+		}
+		return alteracoes;
 	}
-
+	
 }

@@ -23,4 +23,10 @@ public class OrganizadorDTO implements Serializable {
 		return laboratorio;
 	}
 
+	@Override
+	public String toString() {
+		return "[id=" + id +"]";
+	}
+	
+	
 }

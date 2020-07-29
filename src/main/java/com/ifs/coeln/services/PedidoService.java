@@ -1,5 +1,6 @@
 package com.ifs.coeln.services;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.PedidoDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Componente;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Pedido;
@@ -24,7 +27,8 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class PedidoService {
-
+	@Autowired
+	private AtualizacaoService atlService;
 	@Autowired
 	private ComponenteService compService;
 	@Autowired
@@ -95,6 +99,7 @@ public class PedidoService {
 		}
 
 	}
+
 	public void haveRelation(Long id) {
 		try {
 			Pedido entity = repository.getOne(id);
@@ -109,9 +114,11 @@ public class PedidoService {
 	public PedidoDTO update(Long id, Pedido obj) {
 		try {
 			Pedido entity = repository.getOne(id);
-			updateData(entity, obj);
+			List<Alteracao> alteracoes = updateData(entity, obj);
 			if (entity.getIs_deleted()) {
 				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Pedido", 1L));
+			} else {
+				atlService.insert(new Atualizacao(null, entity.getId().toString(), "Pedido", 1L), alteracoes);
 			}
 			return new PedidoDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
@@ -121,14 +128,27 @@ public class PedidoService {
 		}
 	}
 
-	private void updateData(Pedido entity, Pedido obj) {
-		entity.setData_devolucao(
-				(obj.getData_devolucao() == null) ? entity.getData_devolucao() : obj.getData_devolucao());
-		entity.setData_entregue((obj.getData_entregue() == null) ? entity.getData_entregue() : obj.getData_entregue());
+	private List<Alteracao> updateData(Pedido entity, Pedido obj) {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		if (obj.getUsuario() == null) {
-		} else {
-			entity.setUsuario(usuarioService.findByMatricula(obj.getUsuario().getMatricula()));
+		List<Alteracao> alteracoes = new ArrayList<>();
+		if (obj.getData_devolucao() != null) {
+			Instant data_devolucao = entity.getData_devolucao();
+			entity.setData_devolucao(obj.getData_devolucao());
+			alteracoes.add(
+					new Alteracao("Data_devolucao", data_devolucao.toString(), obj.getData_devolucao().toString()));
 		}
+		if (obj.getData_entregue() != null) {
+			Instant data_entregue = entity.getData_entregue();
+			entity.setData_entregue(obj.getData_entregue());
+			alteracoes.add(new Alteracao("Data_entregue", data_entregue.toString(), obj.getData_entregue().toString()));
+		}
+		if (obj.getUsuario() != null) {
+			Usuario usuario = usuarioService.findByMatricula(entity.getUsuario().getMatricula());
+			entity.setUsuario(usuarioService.findByMatricula(obj.getUsuario().getMatricula()));
+			alteracoes.add(new Alteracao("Usuario", usuario.toString(), new Usuario(entity.getUsuario()).toString()));
+		} else {
+			entity.setUsuario(usuarioService.findByMatricula(entity.getUsuario().getMatricula()));
+		}
+		return alteracoes;
 	}
 }

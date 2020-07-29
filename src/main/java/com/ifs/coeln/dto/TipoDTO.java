@@ -25,8 +25,7 @@ public class TipoDTO implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Tipo [id=" + id + ", nome=" + nome + "]";
+		return "[id=" + id + "]";
 	}
-	
-	
+
 }

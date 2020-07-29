@@ -17,4 +17,9 @@ public class LaboratorioDTO implements Serializable {
 		return id;
 	}
 
+	@Override
+	public String toString() {
+		return "[id=" + id + "]";
+	}
+	
 }

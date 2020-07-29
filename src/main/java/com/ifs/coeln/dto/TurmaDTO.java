@@ -23,4 +23,10 @@ public class TurmaDTO implements Serializable {
 		return nome;
 	}
 
+	@Override
+	public String toString() {
+		return "[id=" + id + "]";
+	}
+	
+	
 }

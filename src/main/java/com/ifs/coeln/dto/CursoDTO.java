@@ -23,4 +23,10 @@ public class CursoDTO implements Serializable {
 		return nome;
 	}
 
+	@Override
+	public String toString() {
+		return "[id=" + id + "]";
+	}
+
+	
 }

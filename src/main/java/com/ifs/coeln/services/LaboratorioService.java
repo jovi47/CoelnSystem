@@ -12,6 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.LaboratorioDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Laboratorio;
 import com.ifs.coeln.repositories.LaboratorioRepository;
@@ -20,10 +22,12 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class LaboratorioService {
-	
+
+	@Autowired
+	private AtualizacaoService atlService;
 	@Autowired
 	private HistoricoService hisService;
-	
+
 	@Autowired
 	private LaboratorioRepository repository;
 
@@ -66,23 +70,26 @@ public class LaboratorioService {
 			throw new DatabaseException(e.getMessage());
 		}
 	}
-	
+
 	public void haveRelation(Long id) {
 		try {
 			Laboratorio entity = repository.getOne(id);
-			if(entity.getOrganizadores().size()!=0) {
+			if (entity.getOrganizadores().size() != 0) {
 				throw new DatabaseException("Esse laboratorio possui relacao com outras tabelas, exclusao negada");
 			}
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Laboratorio", id);
 		}
 	}
+
 	public LaboratorioDTO update(Long id, Laboratorio obj) {
 		try {
 			Laboratorio entity = repository.getOne(id);
-			updateData(entity, obj);
-			if(entity.getIs_deleted()) {
+			List<Alteracao> alteracoes = updateData(entity, obj);
+			if (entity.getIs_deleted()) {
 				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Laboratorio", 1L));
+			} else {
+				atlService.insert(new Atualizacao(null, entity.getId().toString(), "Laboratorio", 1L), alteracoes);
 			}
 			return new LaboratorioDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
@@ -92,9 +99,16 @@ public class LaboratorioService {
 		}
 	}
 
-	private void updateData(Laboratorio entity, Laboratorio obj) {
-		entity.setId((obj.getId() == null) ? entity.getId() : obj.getId());
+	private List<Alteracao> updateData(Laboratorio entity, Laboratorio obj) {
+		List<Alteracao> alteracoes = new ArrayList<>();
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
+			//Não dá pra dar update no id lembrar.
+		if (entity.getId() != null) {
+			String id = entity.getId().toString();
+			entity.setId(obj.getId());
+			alteracoes.add(new Alteracao("Id", id, obj.getId().toString()));
+		}
+		return alteracoes;
 	}
 
 }

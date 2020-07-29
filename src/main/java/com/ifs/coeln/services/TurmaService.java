@@ -12,6 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.TurmaDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Turma;
 import com.ifs.coeln.repositories.TurmaRepository;
@@ -20,10 +22,13 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class TurmaService {
-	
+
+	@Autowired
+	private AtualizacaoService atlService;
+
 	@Autowired
 	private HistoricoService hisService;
-	
+
 	@Autowired
 	private TurmaRepository repository;
 
@@ -70,9 +75,12 @@ public class TurmaService {
 	public TurmaDTO update(Long id, Turma obj) {
 		try {
 			Turma entity = repository.getOne(id);
-
-			updateData(entity, obj);
-			hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Turma", 1L));
+			List<Alteracao> alteracoes = updateData(entity, obj);
+			if (entity.getIs_deleted()) {
+				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Turma", 1L));
+			} else {
+				atlService.insert(new Atualizacao(null, entity.getId().toString(), "Turma", 1L), alteracoes);
+			}
 			return new TurmaDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Turma", id);
@@ -81,8 +89,14 @@ public class TurmaService {
 		}
 	}
 
-	private void updateData(Turma entity, Turma obj) {
+	private List<Alteracao> updateData(Turma entity, Turma obj) {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		entity.setNome((obj.getNome() == null) ? entity.getNome() : obj.getNome());
+		List<Alteracao> alteracoes = new ArrayList<>();
+		if (obj.getNome() != null) {
+			String nome = entity.getNome();
+			entity.setNome(obj.getNome());
+			alteracoes.add(new Alteracao("Nome", nome, obj.getNome()));
+		}
+		return alteracoes;
 	}
 }

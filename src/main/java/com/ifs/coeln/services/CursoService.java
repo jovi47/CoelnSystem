@@ -12,6 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.CursoDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Curso;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.repositories.CursoRepository;
@@ -20,10 +22,12 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class CursoService {
-	
+
+	@Autowired
+	private AtualizacaoService atlService;
 	@Autowired
 	private HistoricoService hisService;
-	
+
 	@Autowired
 	private CursoRepository repository;
 
@@ -70,9 +74,11 @@ public class CursoService {
 	public CursoDTO update(Long id, Curso obj) {
 		try {
 			Curso entity = repository.getOne(id);
-			updateData(entity, obj);
-			if(entity.getIs_deleted()) {
+			List<Alteracao> alteracoes = updateData(entity, obj);
+			if (entity.getIs_deleted()) {
 				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Curso", 1L));
+			} else {
+				atlService.insert(new Atualizacao(null, entity.getId().toString(), "Curso", 1L), alteracoes);
 			}
 			return new CursoDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
@@ -82,8 +88,14 @@ public class CursoService {
 		}
 	}
 
-	private void updateData(Curso entity, Curso obj) {
+	private List<Alteracao> updateData(Curso entity, Curso obj) {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		entity.setNome((obj.getNome() == null) ? entity.getNome() : obj.getNome());
+		List<Alteracao> alteracoes = new ArrayList<>();
+		if (obj.getNome() != null) {
+			String nome = entity.getNome();
+			entity.setNome(obj.getNome());
+			alteracoes.add(new Alteracao("Nome", nome, obj.getNome()));
+		}
+		return alteracoes;
 	}
 }

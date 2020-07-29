@@ -43,4 +43,9 @@ public class ComponenteDTO implements Serializable {
 		return observacoes;
 	}
 
+	@Override
+	public String toString() {
+		return "[id=" + id + "]";
+	}
+
 }

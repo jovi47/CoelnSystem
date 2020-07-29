@@ -12,6 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.ifs.coeln.dto.TipoDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Tipo;
 import com.ifs.coeln.repositories.TipoRepository;
@@ -21,6 +23,8 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 @Service
 public class TipoService {
 	
+	@Autowired 
+	private AtualizacaoService atlService;
 	@Autowired
 	private HistoricoService hisService;
 	
@@ -80,8 +84,12 @@ public class TipoService {
 	public TipoDTO update(Long id, Tipo obj) {
 		try {
 			Tipo entity = repository.getOne(id);
-			updateData(entity, obj);
-			hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Tipo", 1L));
+			List<Alteracao> alteracoes = updateData(entity, obj);
+			if(entity.getIs_deleted()) {
+				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Tipo", 1L));
+			} else {
+				atlService.insert(new Atualizacao(null, entity.getId().toString(), "Tipo", 1L), alteracoes);
+			}
 			return new TipoDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Tipo", id);
@@ -90,8 +98,14 @@ public class TipoService {
 		}
 	}
 
-	private void updateData(Tipo entity, Tipo obj) {
+	private List<Alteracao> updateData(Tipo entity, Tipo obj) {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		entity.setNome((obj.getNome() == null) ? entity.getNome() : obj.getNome());
+		List<Alteracao> alteracoes = new ArrayList<>();
+		if (obj.getNome() != null) {
+			String nome = entity.getNome();
+			entity.setNome(obj.getNome());
+			alteracoes.add(new Alteracao("Nome", nome, obj.getNome()));
+		}
+		return alteracoes;
 	}
 }

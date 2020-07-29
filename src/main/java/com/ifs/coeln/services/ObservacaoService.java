@@ -11,7 +11,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.ifs.coeln.dto.ComponenteDTO;
 import com.ifs.coeln.dto.ObservacaoDTO;
+import com.ifs.coeln.entities.Alteracao;
+import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.Componente;
 import com.ifs.coeln.entities.Historico;
 import com.ifs.coeln.entities.Observacao;
@@ -21,13 +24,15 @@ import com.ifs.coeln.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ObservacaoService {
-	
+
+	@Autowired
+	private AtualizacaoService atlService;
 	@Autowired
 	private HistoricoService hisService;
-	
+
 	@Autowired
 	private ComponenteService compService;
-	
+
 	@Autowired
 	private ObservacaoRepository repository;
 
@@ -79,8 +84,12 @@ public class ObservacaoService {
 	public ObservacaoDTO update(Long id, Observacao obj) {
 		try {
 			Observacao entity = repository.getOne(id);
-			updateData(entity, obj);
-			hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Observacao", 1L));
+			List<Alteracao> alteracoes = updateData(entity, obj);
+			if (entity.getIs_deleted()) {
+				hisService.insert(new Historico(null, "deletado", entity.getId().toString(), "Observacao", 1L));
+			}else {
+				atlService.insert(new Atualizacao(null, entity.getId().toString(), "Observacao", 1L), alteracoes);
+			}
 			return new ObservacaoDTO(repository.save(entity));
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Observacao", id);
@@ -89,12 +98,22 @@ public class ObservacaoService {
 		}
 	}
 
-	private void updateData(Observacao entity, Observacao obj) {
+	private List<Alteracao> updateData(Observacao entity, Observacao obj) {
 		entity.setIs_deleted((obj.getIs_deleted() == null) ? entity.getIs_deleted() : obj.getIs_deleted());
-		entity.setTexto((obj.getTexto() == null) ? entity.getTexto() : obj.getTexto());
-		if (obj.getComponente() == null) {
-		} else {
-			entity.setComponente(compService.findById(obj.getComponente().getId()));
+		List<Alteracao> alteracoes = new ArrayList<>();
+		if (obj.getTexto() != null) {
+			String texto = entity.getTexto();
+			entity.setTexto(obj.getTexto());
+			alteracoes.add(new Alteracao("Texto", texto, obj.getTexto()));
 		}
+		if (obj.getComponente() != null) {
+			Componente componente = compService.findById(entity.getComponente().getId());
+			entity.setComponente(compService.findById(obj.getComponente().getId()));
+			alteracoes.add(new Alteracao("Componente", new ComponenteDTO(componente).toString(),
+					new ComponenteDTO(entity.getComponente()).toString()));
+		} else {
+			entity.setComponente(compService.findById(entity.getComponente().getId()));
+		}
+		return alteracoes;
 	}
 }

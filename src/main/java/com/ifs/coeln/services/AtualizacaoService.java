@@ -12,7 +12,6 @@ import com.ifs.coeln.dto.AtualizacaoDTO;
 import com.ifs.coeln.entities.Alteracao;
 import com.ifs.coeln.entities.Atualizacao;
 import com.ifs.coeln.entities.AtualizacaoAlteracao;
-import com.ifs.coeln.entities.PedidoComponente;
 import com.ifs.coeln.repositories.AlteracaoRepository;
 import com.ifs.coeln.repositories.AtualizacaoAlteracaoRepository;
 import com.ifs.coeln.repositories.AtualizacaoRepository;
